@@ -20,7 +20,15 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _controller.load();
+    _loadActivities();
+  }
+
+  Future<void> _loadActivities() async {
+    try {
+      await _controller.load();
+    } catch (error) {
+      if (mounted) _showMessage('بارگذاری اطلاعات انجام نشد: $error');
+    }
   }
 
   @override
