@@ -1,19 +1,30 @@
-# EXM1
+# Working
 
-A new Flutter project created with FlutLab - https://flutlab.io
+A Persian-first activity tracker built with Flutter.
 
-## Getting Started
+## Features
 
-A few resources to get you started if this is your first Flutter project:
+- Create and manage named activities.
+- Record numeric counts with local date and time.
+- View per-activity history and totals.
+- Display dates in the Jalali calendar and Persian digits.
+- Export records as UTF-8 CSV and share the report.
+- Store data locally on the device; no account or backend is required.
 
-- https://flutter.dev/docs/get-started/codelab
-- https://flutter.dev/docs/cookbook
+## Development
 
-For help getting started with Flutter, view our
-https://flutter.dev/docs, which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+flutter pub get
+dart format .
+flutter analyze
+flutter test
+flutter run
+```
 
-## Getting Started: FlutLab - Flutter Online IDE
+## Architecture
 
-- How to use FlutLab? Please, view our https://flutlab.io/docs
-- Join the discussion and conversation on https://flutlab.io/residents
+The codebase uses a feature-first structure. See [ARCHITECTURE.md](ARCHITECTURE.md) for layer boundaries and responsibilities.
+
+## Android release
+
+Pushes and pull requests targeting `main` run formatting, static analysis, tests, and a release APK build. The APK is uploaded as a GitHub Actions artifact when the workflow succeeds.
