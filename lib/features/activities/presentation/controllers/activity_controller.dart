@@ -19,7 +19,7 @@ class ActivityController extends ChangeNotifier {
 
   List<Activity> _activities = const [];
   List<ActivityEntry> _entries = const [];
-  bool _isLoading = false;
+  bool _isLoading = true;
   bool _isExporting = false;
 
   List<Activity> get activities => List.unmodifiable(_activities);
