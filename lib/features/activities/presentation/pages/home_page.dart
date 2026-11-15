@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import '../../../../core/utils/persian_date_formatter.dart';
 import '../../data/activity_export_service.dart';
 import '../../data/activity_repository.dart';
@@ -86,7 +86,7 @@ class _HomePageState extends State<HomePage> {
       child: Padding(padding: const EdgeInsets.all(20), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Text('تاریخچه ${activity.name}', style: Theme.of(ctx).textTheme.titleLarge), const SizedBox(height: 12),
         Expanded(child: records.isEmpty ? const Center(child: Text('هنوز رکوردی ثبت نشده است.')) : ListView.separated(
-          itemCount: records.length, separatorBuilder: (_, __) => const Divider(),
+          itemCount: records.length, separatorBuilder: (_, _) => const Divider(),
           itemBuilder: (_, i) { final e = records[i]; return ListTile(leading: const Icon(Icons.history), title: Text('تعداد: ${PersianDateFormatter.digits(e.count.toString())}'), subtitle: Text(PersianDateFormatter.dateTime(e.createdAt))); },
         )),
       ])),
