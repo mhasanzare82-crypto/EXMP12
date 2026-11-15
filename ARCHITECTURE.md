@@ -18,9 +18,16 @@ lib/
     errors/                          # Shared error types and handling
     utils/                           # Small reusable utilities
   features/
-    home/
-      data/                          # Data sources and repositories
-      domain/                        # Entities and use cases
+    activities/
+      data/                          # Local persistence and CSV export
+      domain/models/                 # Activity and count-entry models
+      presentation/
+        pages/                       # Activity tracking screen
+        widgets/                     # Activity-specific widgets
+        state/                       # Feature state/controllers
+    home/                            # Reserved for a future dashboard
+      data/
+      domain/
       presentation/
         pages/                       # Full screens
         widgets/                     # Home-only widgets
