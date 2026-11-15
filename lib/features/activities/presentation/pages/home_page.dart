@@ -121,8 +121,69 @@ class _HomePageState extends State<HomePage> {
     setState(() => _activities = updated);
   }
 
+  Future<String?> _askReason() async {
+    final hasReason = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('دلیل ثبت این تعداد'),
+        content: const Text('آیا این ثبت دلیل یا توضیحی دارد؟'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, null),
+            child: const Text('انصراف'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('بدون دلیل'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('بله، با دلیل'),
+          ),
+        ],
+      ),
+    );
+    if (hasReason == null) return null;
+    if (!hasReason) return '';
+
+    final controller = TextEditingController();
+    final reason = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('ثبت دلیل'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          minLines: 2,
+          maxLines: 4,
+          decoration: const InputDecoration(
+            hintText: 'دلیل یا توضیح این ثبت را بنویسید',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('انصراف'),
+          ),
+          FilledButton(
+            onPressed: () {
+              final value = controller.text.trim();
+              if (value.isNotEmpty) Navigator.pop(ctx, value);
+            },
+            child: const Text('ثبت دلیل'),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    return reason?.trim().isEmpty == true ? null : reason?.trim();
+  }
+
   Future<void> _addQuickEntry(Activity activity) async {
-    await _saveEntry(activity, 1);
+    final reason = await _askReason();
+    if (reason == null) return;
+    await _saveEntry(activity, 1, reason: reason);
     if (mounted) _message('یک عدد برای «' + activity.name + '» ثبت شد.');
   }
 
@@ -155,15 +216,18 @@ class _HomePageState extends State<HomePage> {
       ),
     );
     if (count == null) return;
-    await _saveEntry(activity, count);
+    final reason = await _askReason();
+    if (reason == null) return;
+    await _saveEntry(activity, count, reason: reason);
     if (mounted) _message('تعداد با موفقیت ثبت شد.');
   }
 
-  Future<void> _saveEntry(Activity activity, int count) async {
+  Future<void> _saveEntry(Activity activity, int count, {String? reason}) async {
     final entry = ActivityEntry(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       activityId: activity.id,
       count: count,
+      reason: reason == null || reason.isEmpty ? null : reason,
       createdAt: DateTime.now(),
     );
     final updated = [entry, ..._entries];
@@ -238,7 +302,10 @@ class _HomePageState extends State<HomePage> {
                             return ListTile(
                               leading: const Icon(Icons.history),
                               title: Text('تعداد: ' + PersianDateFormatter.digits(entry.count.toString())),
-                              subtitle: Text(PersianDateFormatter.dateTime(entry.createdAt)),
+                              subtitle: Text(
+                                PersianDateFormatter.dateTime(entry.createdAt) +
+                                (entry.reason == null ? '' : '\nدلیل: ' + entry.reason!),
+                              ),
                             );
                           },
                         ),
