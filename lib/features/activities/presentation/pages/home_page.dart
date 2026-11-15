@@ -48,10 +48,13 @@ class _HomePageState extends State<HomePage> {
         case AddActivityResult.added:
           _activityNameController.clear();
           _showMessage('فعالیت با موفقیت اضافه شد.');
+          break;
         case AddActivityResult.emptyName:
           _showMessage('لطفاً نام فعالیت را وارد کن.');
+          break;
         case AddActivityResult.duplicate:
           _showMessage('این فعالیت قبلاً اضافه شده است.');
+          break;
       }
     } catch (error) {
       if (mounted) _showMessage('ذخیره فعالیت انجام نشد: $error');
