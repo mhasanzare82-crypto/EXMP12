@@ -1,24 +1,55 @@
-import 'dart:convert';
 import 'dart:io';
+import 'package:excel/excel.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../core/utils/persian_date_formatter.dart';
 import '../domain/models/activity.dart';
 import '../domain/models/activity_entry.dart';
+import '../domain/models/activity_folder.dart';
 
 class ActivityExportService {
-  Future<void> exportCsv({required List<Activity> activities, required List<ActivityEntry> entries}) async {
-    final names = {for (final a in activities) a.id: a.name};
-    final rows = <List<String>>[
-      ['نام فعالیت', 'تعداد', 'تاریخ شمسی', 'ساعت', 'دلیل'],
-      ...entries.map((e) => [names[e.activityId] ?? 'فعالیت حذف‌شده', e.count.toString(), PersianDateFormatter.date(e.createdAt), PersianDateFormatter.time(e.createdAt), e.reason ?? 'بدون دلیل']),
-    ];
-    final csv = rows.map((row) => row.map(_escape).join(',')).join('\r\n');
-    final bytes = [0xEF, 0xBB, 0xBF, ...utf8.encode(csv)];
+  Future<void> exportExcel({
+    required List<Activity> activities,
+    required List<ActivityEntry> entries,
+    required List<ActivityFolder> folders,
+  }) async {
+    final names = {for (final activity in activities) activity.id: activity.name};
+    final folderNames = {for (final folder in folders) folder.id: folder.name};
+    final excel = Excel.createExcel();
+    final sheet = excel['گزارش فعالیت‌ها'];
+    sheet.appendRow([
+      TextCellValue('نام فعالیت'),
+      TextCellValue('پوشه'),
+      TextCellValue('تعداد'),
+      TextCellValue('تاریخ شمسی'),
+      TextCellValue('ساعت'),
+      TextCellValue('دلیل'),
+    ]);
+
+    for (final entry in entries) {
+      final activity = activities.where((item) => item.id == entry.activityId);
+      final folderName = activity.isEmpty || activity.first.folderId == null
+          ? 'بدون پوشه'
+          : folderNames[activity.first.folderId] ?? 'بدون پوشه';
+      sheet.appendRow([
+        TextCellValue(names[entry.activityId] ?? 'فعالیت حذف‌شده'),
+        TextCellValue(folderName),
+        IntCellValue(entry.count),
+        TextCellValue(PersianDateFormatter.date(entry.createdAt)),
+        TextCellValue(PersianDateFormatter.time(entry.createdAt)),
+        TextCellValue(entry.reason ?? 'بدون دلیل'),
+      ]);
+    }
+
+    final bytes = excel.save();
+    if (bytes == null) throw StateError('ساخت فایل Excel ناموفق بود.');
     final dir = await getTemporaryDirectory();
-    final file = File('${dir.path}/activity_report.csv');
+    final file = File('${dir.path}/activity_report.xlsx');
     await file.writeAsBytes(bytes, flush: true);
-    await SharePlus.instance.share(ShareParams(files: [XFile(file.path, mimeType: 'text/csv')], subject: 'گزارش فعالیت‌ها', text: 'گزارش تعداد، تاریخ و ساعت فعالیت‌ها'));
+    await SharePlus.instance.share(ShareParams(
+      files: [XFile(file.path, mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')],
+      subject: 'گزارش اکسل فعالیت‌ها',
+      text: 'گزارش فعالیت‌ها شامل تعداد، پوشه، تاریخ، ساعت و دلیل ثبت',
+    ));
   }
-  String _escape(String value) => '"${value.replaceAll('"', '""')}"';
 }
