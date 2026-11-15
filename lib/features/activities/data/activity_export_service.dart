@@ -10,8 +10,8 @@ class ActivityExportService {
   Future<void> exportCsv({required List<Activity> activities, required List<ActivityEntry> entries}) async {
     final names = {for (final a in activities) a.id: a.name};
     final rows = <List<String>>[
-      ['نام فعالیت', 'تعداد', 'تاریخ شمسی', 'ساعت'],
-      ...entries.map((e) => [names[e.activityId] ?? 'فعالیت حذف‌شده', e.count.toString(), PersianDateFormatter.date(e.createdAt), PersianDateFormatter.time(e.createdAt)]),
+      ['نام فعالیت', 'تعداد', 'تاریخ شمسی', 'ساعت', 'دلیل'],
+      ...entries.map((e) => [names[e.activityId] ?? 'فعالیت حذف‌شده', e.count.toString(), PersianDateFormatter.date(e.createdAt), PersianDateFormatter.time(e.createdAt), e.reason ?? 'بدون دلیل']),
     ];
     final csv = rows.map((row) => row.map(_escape).join(',')).join('\r\n');
     final bytes = [0xEF, 0xBB, 0xBF, ...utf8.encode(csv)];
