@@ -1,3 +1,3 @@
 abstract final class AppConstants {
-  static const String appName = 'EXMP12';
+  static const String appName = 'Working';
 }

@@ -1,43 +1,43 @@
-# Project architecture
+# Architecture
 
-The app uses a feature-first, layered Flutter structure. Keep each responsibility in its own file and avoid putting feature logic in `main.dart`.
+Working uses a feature-first structure with explicit boundaries between application composition, shared infrastructure, and feature code.
 
-## Structure
+## Source layout
 
 ```text
 lib/
-  main.dart                         # Application entry point only
+  main.dart
   app/
-    app.dart                         # MaterialApp composition
+    app.dart
   core/
     constants/
-      app_constants.dart             # App-wide constants
     theme/
-      app_theme.dart                 # Global theme
-    services/                        # Shared platform/API services
-    errors/                          # Shared error types and handling
-    utils/                           # Small reusable utilities
+    utils/
   features/
     activities/
-      data/                          # Local persistence and CSV export
-      domain/models/                 # Activity and count-entry models
-      presentation/
-        pages/                       # Activity tracking screen
-        widgets/                     # Activity-specific widgets
-        state/                       # Feature state/controllers
-    home/                            # Reserved for a future dashboard
       data/
+        activity_repository.dart
+        activity_export_service.dart
       domain/
+        models/
       presentation/
-        pages/                       # Full screens
-        widgets/                     # Home-only widgets
-        state/                       # State/controller for the feature
+        controllers/
+        pages/
+```
 
-## Rules for future changes
+## Responsibilities
 
-- One screen per page file; reusable screen-specific components live in that feature's `widgets/` folder.
-- Keep API/data access in `data/`, business rules in `domain/`, and UI in `presentation/`.
-- Put genuinely shared code in `core/`; do not couple one feature to another feature's internals.
-- Add each new feature as its own folder under `features/<feature_name>/`.
-- Keep `main.dart` limited to bootstrapping the app.
-- Add dependencies only when the selected feature actually requires them.
+- **App:** configures the root widget, locale, and theme.
+- **Core:** contains app-wide constants, theme, and small stateless utilities.
+- **Activities domain:** contains activity and entry entities; it must not depend on Flutter UI or persistence plugins.
+- **Activities data:** owns local persistence and CSV/share integration.
+- **Activities presentation:** owns screen state orchestration in the controller and renders UI in pages/widgets.
+
+## Rules
+
+- Keep platform APIs and serialization out of widgets.
+- Keep state transitions and validation in the feature controller or domain layer, not in build methods.
+- Do not add placeholder features or duplicate screens. Create a feature folder only when it has a real user-facing responsibility.
+- Prefer immutable values at layer boundaries and validate external data before using it.
+- Add tests for business rules, serialization, and date formatting.
+- Keep `main.dart` limited to application bootstrap.
