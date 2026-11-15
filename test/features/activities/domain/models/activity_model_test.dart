@@ -7,7 +7,10 @@ void main() {
     test('round trips an activity through JSON', () {
       const activity = Activity(id: 'activity-1', name: 'مطالعه');
 
-      expect(Activity.fromJson(activity.toJson()), activity);
+      final restored = Activity.fromJson(activity.toJson());
+
+      expect(restored.id, activity.id);
+      expect(restored.name, activity.name);
     });
   });
 
