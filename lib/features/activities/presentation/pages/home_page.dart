@@ -268,7 +268,7 @@ class _HomePageState extends State<HomePage> {
     }
     setState(() => _exporting = true);
     try {
-      await _exporter.exportCsv(activities: _activities, entries: _entries);
+      await _exporter.exportExcel(activities: _activities, entries: _entries, folders: _folders);
     } catch (e) {
       if (mounted) _message('تهیه خروجی انجام نشد: $e');
     } finally {
