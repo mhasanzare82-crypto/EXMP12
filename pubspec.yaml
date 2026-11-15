@@ -35,4 +35,5 @@ flutter:
   #     fonts:
   #       - asset: fonts/Schyler-Regular.ttf
   #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
   #         weight: 700
